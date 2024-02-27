@@ -20,8 +20,9 @@ def status():
 @app_views.route("/stats", strict_slashes=False)
 def number_of_objects():
     """method return number of objects in all classes"""
-    classes = {"Amenity": Amenity, "City": City,
-               "Place": Place, "Review": Review, "State": State, "User": User}
+    classes = {"amenities": Amenity, "cities": City,
+               "places": Place, "reviews": Review,
+               "states": State, "users": User}
     newdict = {}
     for key, value in classes.items():
         newdict[key] = storage.count(value)
