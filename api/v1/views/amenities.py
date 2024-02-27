@@ -10,7 +10,10 @@ from models import storage
 def get_amenities():
     """Retrieves all Amenities"""
     amenties = storage.all(Amenity).values()
-    return jsonify(amenties.to_dict())
+    all_amenities = []
+    for amenity in amenties:
+        all_amenities.append(amenity.to_dict)
+    return jsonify(all_amenities)
 
 
 @app_views.route("/amenities/<amenity_id>", methods=["GET"],
@@ -47,6 +50,7 @@ def create_amenity():
     if 'name' not in amenity_data:
         abort(400, 'Missing name')
     new_amenity = Amenity(**amenity_data)
+    storage.save()
     return make_response(jsonify(new_amenity.to_dict()), 201)
 
 
