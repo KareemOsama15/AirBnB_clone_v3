@@ -38,11 +38,12 @@ def delete_state(state_id):
 @app_views.route("/states", methods=['POST'], strict_slashes=False)
 def create_state():
     """method create a new state instance"""
-    if not request.get_json():
-        abort(400, "Not a JSON")
+    content_type = request.headers.get('Content-Type')
+    if content_type != 'application/json' or not request.get_json():
+        abort(400, 'Not a JSON')
     state_data = request.get_json()
     if 'name' not in state_data:
-        abort(400, "Missing name")
+        abort(400, 'Missing name')
 
     new_state = State(**state_data)
     storage.new(new_state)
@@ -55,9 +56,10 @@ def update_state(state_id):
     """method update a state instance based on id"""
     state = storage.get(State, state_id)
     if not state:
-        abort(400)
-    if not request.get_json():
-        abort(400, "Not a JSON")
+        abort(404)
+    content_type = request.headers.get('Content-Type')
+    if content_type != 'application/json' or not request.get_json():
+        abort(400, 'Not a JSON')
 
     state_data = request.get_json()
     ignored_attr = ["created_at", "updated_at", "id"]
