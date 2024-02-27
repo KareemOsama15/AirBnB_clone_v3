@@ -11,13 +11,13 @@ from models import storage
                  strict_slashes=False)
 def get_state_cities(state_id):
     """method that gets all citeies related to specific state"""
+    state = storage.get(State, state_id)
+    if not state:
+        abort(404)
     cities = []
-    all_cities = storage.all(City).values()
-    for city in all_cities:
+    for city in state.cities:
         if city.state_id == state_id:
             cities.append(city.to_dict())
-    if cities == []:
-        abort(404)
     return jsonify(cities)
 
 
