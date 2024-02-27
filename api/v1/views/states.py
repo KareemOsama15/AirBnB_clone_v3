@@ -26,7 +26,7 @@ def get_state_id(state_id):
                  strict_slashes=False)
 def delete_state(state_id):
     """method deletes state based on id or 404 if not found"""
-    state = storage.get(State, state_id)
+    state = storage.get("State", state_id)
     if state:
         storage.delete(state)
         storage.save()
@@ -53,15 +53,13 @@ def create_state():
 @app_views.route("/states/<state_id>", methods=['PUT'], strict_slashes=False)
 def update_state(state_id):
     """method update a state instance based on id"""
-    state = storage.get(State, state_id)
+    state = storage.get("State", state_id)
     if not state:
         abort(400)
 
     state_data = request.get_json()
     if not state_data:
         abort(400, "Not a JSON")
-    if 'name' not in state_data:
-        abort(400, "Missing name")
 
     ignored_attr = ["created_at", "updated_at", "id"]
     for key, value in state_data.items():
