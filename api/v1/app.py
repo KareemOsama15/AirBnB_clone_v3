@@ -1,1 +1,30 @@
 #!/usr/bin/python3
+"""Flask App of Api"""
+from flask import Flask
+from flask import make_response, jsonify
+from models import storage
+from api.v1.views import app_views
+from os import getenv
+
+app = Flask(__name__)
+app.register_blueprint(app_views)
+
+
+@app.teardown_appcontext
+def close_storage(exception):
+    """method that close ftorage when sission ended"""
+    storage.close()
+
+
+@app.errorhandler(404)
+def handle_error(error):
+    """method handels a 404 errors"""
+    return make_response(jsonify({"error": "Not found"}), 404)
+
+
+if __name__ == "__main__":
+    app.run(host=getenv('HBNB_API_HOST')
+            if getenv('HBNB_API_HOST') else '0.0.0.0',
+            port=getenv('HBNB_API_PORT')
+            if getenv('HBNB_API_PORT') else '5000',
+            threaded=True)
