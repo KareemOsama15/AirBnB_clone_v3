@@ -3,6 +3,7 @@
 """
 import models
 from models.state import State
+from models.city import City
 import json
 import requests
 
@@ -12,19 +13,19 @@ import requests
 # first_state_id = list(models.storage.all(State).values())[0].id
 # print("First state: {}".format(models.storage.get(State, first_state_id)))
 
-# def func():
-#     states = models.storage.all(State).values()
-#     return states
+def func():
+    states = models.storage.all(City).values()
+    return states
 
-# print(func())
+print(func())
 
 
 """Testing file
 """
 
 
-if __name__ == "__main__":
-    """ POST /api/v1/states
-    """
-    r = requests.post("http://0.0.0.0:5050/api/v1/states/", data={ 'name': "NewState" }, headers={ 'Content-Type': "application/x-www-form-urlencoded" })
-    print(r.status_code)
+# if __name__ == "__main__":
+#     """ POST /api/v1/states
+#     """
+#     r = requests.post("http://0.0.0.0:5050/api/v1/states/", data={ 'name': "NewState" }, headers={ 'Content-Type': "application/x-www-form-urlencoded" })
+#     print(r.status_code)
