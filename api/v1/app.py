@@ -10,7 +10,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 @app.teardown_appcontext
 def close_storage(exception):
