@@ -103,7 +103,8 @@ def places_search():
         abort(400, 'Not a JSON')
 
     if len(places_data) == 0:
-        return jsonify([place.to_dict] for place in storage.all(Place).values())
+        return jsonify([place.to_dict]
+                       for place in storage.all(Place).values())
 
     all_places = []
     all_cities = []
