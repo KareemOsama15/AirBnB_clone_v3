@@ -63,6 +63,7 @@ def create_place(city_id):
     elif 'name' not in place_data:
         abort(400, 'Missing name')
 
+    place_data['city_id'] = city_id
     new_place = Place(**place_data)
     new_place.save()
     return make_response(jsonify(new_place.to_dict()), 201)
