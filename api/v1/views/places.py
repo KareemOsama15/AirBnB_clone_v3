@@ -91,3 +91,49 @@ def update_place(place_id):
             setattr(place, key, value)
     storage.save()
     return make_response(jsonify(place.to_dict()), 200)
+
+
+@app_views.route("/places_search", methods=['POST'],
+                 strict_slashes=False)
+def places_search():
+    """Search on Places"""
+    content_type = request.headers.get('Content-Type')
+    places_data = request.get_json()
+    if content_type != 'application/json' or not places_data:
+        abort(400, 'Not a JSON')
+
+    if len(places_data) == 0:
+        return jsonify([place.to_dict] for place in storage.all(Place).values())
+
+    all_places = []
+    all_cities = []
+    places_ojbs = []
+    places = storage.all(Place).values()
+
+    for key, list_value in places_data.items():
+        if key == 'states':
+            for state_id in list_value:
+                state = storage.get(State, state_id)
+                if state:
+                    all_cities.append(city.city_id for city in state.cities)
+        elif key == 'cities':
+            for city_id in all_cities:
+                if city_id not in list_value:
+                    list_value.append(city_id)
+            for city_id in list_value:
+                if storage.get(City, city_id):
+                    for place in places:
+                        if place.city_id == city_id:
+                            places_ojbs.append(place)
+        elif key == 'amenities':
+            if len(list_value) != 0:
+                for amenity_id in list_value:
+                    amenity = storage.get(Amenity, amenity_id)
+                    if amenity:
+                        for place in places_ojbs:
+                            if amenity.place_id == place.id:
+                                all_places.append(place.to_dict())
+            else:
+                for place in places_ojbs:
+                    all_places.append(place.to_dict())
+    return jsonify(all_places)
