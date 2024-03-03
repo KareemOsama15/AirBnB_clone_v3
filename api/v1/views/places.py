@@ -103,38 +103,39 @@ def places_search():
         abort(400, 'Not a JSON')
 
     if len(places_data) == 0:
-        return jsonify([place.to_dict]
+        return jsonify([place.to_dict()]
                        for place in storage.all(Place).values())
 
     all_places = []
-    all_cities = []
     places_ojbs = []
-    places = storage.all(Place).values()
 
-    for key, list_value in places_data.items():
-        if key == 'states':
-            for state_id in list_value:
-                state = storage.get(State, state_id)
-                if state:
-                    all_cities.append(city.city_id for city in state.cities)
-        elif key == 'cities':
-            for city_id in all_cities:
-                if city_id not in list_value:
-                    list_value.append(city_id)
-            for city_id in list_value:
-                if storage.get(City, city_id):
-                    for place in places:
-                        if place.city_id == city_id:
-                            places_ojbs.append(place)
-        elif key == 'amenities':
-            if len(list_value) != 0:
-                for amenity_id in list_value:
-                    amenity = storage.get(Amenity, amenity_id)
-                    if amenity:
-                        for place in places_ojbs:
-                            if amenity.place_id == place.id:
-                                all_places.append(place.to_dict())
-            else:
-                for place in places_ojbs:
+    if 'states' in places_data:
+        for state_id in places_data['states']:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        places_ojbs.append(place)
+
+    if 'cities' in places_data:
+        for city_id in places_data['cities']:
+            city = storage.get(City, city_id)
+            if city:
+                for place in city.places:
+                    if place not in places_ojbs:
+                        places_ojbs.append(place)
+
+    if 'amenities' in places_data and len(places_data['amenities']) != 0:
+        if places_ojbs == []:
+            places_ojbs = storage.all(Place).values()
+        amenties_objs = [storage.get(Amenity, amenity_id)
+                         for amenity_id in places_data['amenities']]
+        for place in places_ojbs:
+            for amenity in amenties_objs:
+                if amenity and amenity in place.amenities:
                     all_places.append(place.to_dict())
+    else:
+        for place in places_ojbs:
+            all_places.append(place.to_dict())
+
     return jsonify(all_places)
