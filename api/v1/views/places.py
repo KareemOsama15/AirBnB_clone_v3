@@ -102,7 +102,7 @@ def places_search():
     if content_type != 'application/json' or not places_data:
         abort(400, 'Not a JSON')
 
-    if len(places_data) == 0:
+    if places_data and len(places_data) == 0:
         return jsonify([place.to_dict()]
                        for place in storage.all(Place).values())
 
@@ -131,9 +131,9 @@ def places_search():
         amenties_objs = [storage.get(Amenity, amenity_id)
                          for amenity_id in places_data['amenities']]
         for place in places_ojbs:
-            for amenity in amenties_objs:
-                if amenity and amenity in place.amenities:
-                    all_places.append(place.to_dict())
+            if all(amenity in place.amenities
+                   for amenity in amenties_objs):
+                all_places.append(place.to_dict())
     else:
         for place in places_ojbs:
             all_places.append(place.to_dict())
